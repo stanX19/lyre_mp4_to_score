@@ -14,12 +14,12 @@ def process_video(video_path, note_template_path, threshold, scales, target_pixe
     note_brightness_history = []  # Track the history of detected note positions
     diff_per_frame = []
 
+    if start_form >= int(cap.get(cv2.CAP_PROP_FRAME_COUNT)):
+        return []
     note_positions = find_key_position.cv2_loop_through(video_path, note_template_path, threshold,
                                                         scales, start_form)
-    f_count = 0
-    while f_count < start_form and cap.isOpened():
-        cap.read()
-        f_count += 1
+    cap.set(cv2.CAP_PROP_POS_FRAMES, start_form)
+    f_count = start_form
 
     while cap.isOpened():
         f_count += 1
@@ -99,7 +99,7 @@ def process_video(video_path, note_template_path, threshold, scales, target_pixe
 
 def default_configs():
     note_template_path = 'assets/templates/first_note.png'
-    threshold = 0.955
+    threshold = 0.96
     scales = np.linspace(0.5, 1.2, num=8)
     target_pixel = (23, 55)  # displacement from the top-left corner of the bounding box
 
@@ -116,9 +116,9 @@ def backup_configs():
 
 
 def main():
-    video_path = 'assets/test_videos/cage.mp4'
+    video_path = r"D:\Downloads\flower dance.mp4"  # 'assets/test_videos/cage.mp4'
 
-    diff_per_frame = process_video(video_path, **default_configs(), start_form=90)
+    diff_per_frame = process_video(video_path, **default_configs(), start_form=1)
     with open('data\\diff_per_frame.json', 'w+') as json_file:
         json.dump(diff_per_frame, json_file)
 

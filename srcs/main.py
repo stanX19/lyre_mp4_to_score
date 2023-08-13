@@ -1,11 +1,11 @@
 import easygui
 import format_input
-import process_video as vmp
+import process_video as pv
 from delay_frame_interpreter import *
 
 
 def task1(video_path, start=1):
-    diff_per_frame = vmp.process_video(video_path, **vmp.default_configs(), start_form=start)
+    diff_per_frame = pv.process_video(video_path, **pv.default_configs(), start_form=start)
     with open('data\\diff_per_frame.json', 'w+') as json_file:
         json.dump(diff_per_frame, json_file)
     return diff_per_frame

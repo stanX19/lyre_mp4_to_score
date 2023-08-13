@@ -99,6 +99,11 @@ def cv2_loop_through(video_path, note_template_path, threshold, scales, start_fo
                             pt2 = (position[0] + position[2], position[1] + position[3])
                             cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2)
 
+                    # for position in [[405, 658], [405, 793], [405, 929]]:
+                    #     pt1 = (position[0], position[1])
+                    #     pt2 = (position[0] + 5, position[1] + 5)
+                    #     cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2)
+
                     # resize for display
                     resized_frame = utils.cv2_resize_to_fit(frame)
 
@@ -183,12 +188,15 @@ def cv2_loop_through0(video_path, note_template_path, threshold, scales, start_f
 
 
 def main():
-    video_path = r"assets/test_videos/cage.mp4"
+    # video_path = r"assets/test_videos/cage.mp4"
+    video_path = r"D:\Downloads\flower dance.mp4"
     note_template_path = 'assets/templates/first_note.png'
-    threshold = 0.955
+    threshold = 0.96
     scales = np.linspace(0.5, 1.2, num=8)
-    result = cv2_loop_through(video_path, note_template_path, threshold, scales, 34)
-    print(result)
+    result = cv2_loop_through(video_path, note_template_path, threshold, scales, 1)
+
+    for x, y, width, height, scale in result:
+        print(x, y)
 
 
 if __name__ == '__main__':

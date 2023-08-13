@@ -23,6 +23,7 @@ def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshol
 
         for idx, diff in enumerate(all_diff):
             if diff > difference_threshold:
+                print(diff)
                 if changes_status[idx] == 0:  # None
                     changes_status[idx] = 1
                 elif changes_status[idx] > 1:  # Consecutive note press detected
