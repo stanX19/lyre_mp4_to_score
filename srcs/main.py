@@ -13,7 +13,7 @@ def task1(video_path, start=1):
 
 def task2(video_path, name, saving_func, diff_per_frame=None):
     diff_data_path = 'data\\diff_per_frame.json'
-    difference_threshold = 5
+    difference_threshold = 10
     decrease_needed = 0
 
     if diff_per_frame is None:

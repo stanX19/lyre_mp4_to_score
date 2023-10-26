@@ -3,7 +3,7 @@ import json
 from utils import score_list_to_nightly, score_list_to_recorded_nightly, score_list_to_score
 
 
-def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshold=5, decrease_needed=0):
+def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshold=10, decrease_needed=0):
     keys = "ZXCVBNMASDFGHJQWERTYU"
     keys_per_frame = []
 
@@ -102,16 +102,16 @@ def save_as_composed_nightly(score_list, name):
         f.write(nightly)
 
 
-def brightness_diff_to_score_list(video_path, diff_per_frame, difference_threshold=5, decrease_needed=0):
+def brightness_diff_to_score_list(video_path, diff_per_frame, difference_threshold=10, decrease_needed=0):
     keys = brightness_diff_to_keys(diff_per_frame, difference_threshold, decrease_needed)
     score_list = keys_to_score_list(keys, video_path)
     return score_list
 
 
 def main():
-    name = "Lantern Rite"
+    name = "Kataomoi - Aimer"
     diff_data_path = 'data\\diff_per_frame.json'
-    video_path = f'assets\\{name}.mp4'
+    video_path = f'assets\\test_videos\\{name}.mp4'
     difference_threshold = 5
     decrease_needed = 0
 

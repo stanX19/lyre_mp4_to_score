@@ -41,7 +41,7 @@ def sets_of_data_with_difference(sorted_data: list, difference: int, pixel_uncer
     grouped_values = {}
 
     for value in sorted_data:
-        for group_key in grouped_values.keys():
+        for group_key in grouped_values:
             diff = value - grouped_values[group_key][-1]
             number = round(diff / difference)
             if min(diff % difference, -diff % difference) <= pixel_uncertainty * number:
@@ -105,9 +105,13 @@ def deduce_all_key_pos(key_positions: list[list[int]],
 
     elif len(filtered_sets_of_x) == 1 and len(possible_sets_of_y) == 1 and len(possible_sets_of_y[0]) > 1:
         set_of_y = possible_sets_of_y[0]
-        y_diff = set_of_y[1] - set_of_y[0]
-        if abs(y_diff - desired_y_diff) > y_uncertainty:
-            y_diff //= 2
+        print(set_of_y)
+        print(filtered_sets_of_y)
+        y_diff = set_of_y[-1] - set_of_y[-2]
+        for n in range(1, 10):
+            if abs(y_diff / n - desired_y_diff) < y_uncertainty:
+                y_diff //= n
+                break
         if set_of_y[-1] + y_diff + height > screen_height: # exceed boundary of screen
             min_y, max_y = set_of_y[-1] - 2 * y_diff, set_of_y[-1]
             min_x, max_x = filtered_sets_of_x[0][0], filtered_sets_of_x[0][-1]
