@@ -82,7 +82,7 @@ def prompt_for_details(path: str) -> list[str, str, SavingFuncType, bool]:
     return [path, name, saving_func, use_history]
 
 
-def save_video_as_nightly(dst_path: str, video_path=None):
+def save_video_as_nightly(dst_path: str, video_path=Union[list, None]):
     if video_path is None:
         video_path = easygui.fileopenbox("select designated 720p mp4 file", "Select Video",
                                          "D:\\Downloads\\", filetypes=["*.mp4"], multiple=True)
