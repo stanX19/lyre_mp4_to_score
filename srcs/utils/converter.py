@@ -1,11 +1,7 @@
 import json
 import math
 import statistics
-
-try:
-    from .common import first_float
-except ImportError:
-    from common import first_float
+from .common import first_float
 
 
 def score_list_to_score(score_list):
@@ -63,7 +59,7 @@ def key_list_to_score_list(key_list: list):
     return score_list
 
 
-def score_list_to_nightly(score_list: list, name="Undefined"):
+def score_list_to_composed_nightly(score_list: list, name="Undefined") -> str:
     all_time = [i for i in score_list if type(i) == float]
     try:
         average_time = statistics.mode(all_time)  # mode
@@ -110,7 +106,7 @@ def score_list_to_nightly(score_list: list, name="Undefined"):
     return jsonFile
 
 
-def score_list_to_recorded_nightly(score_list: list, name="Undefined"):
+def score_list_to_recorded_nightly(score_list: list, name="Undefined") -> str:
     json_file = {"name": name, "type": "recorded",
                  "instruments": [{"name": "Lyre", "volume": 90, "pitch": ""}], "pitch": "C", "bpm": 220,
                  "data": {"isComposed": False, "isComposedVersion": False, "appName": "Genshin"}}

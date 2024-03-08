@@ -22,8 +22,8 @@ def process_video(video_path, first_note_template_path, threshold, scales, targe
 
 
 def main():
-    video_path = r"../srcs/assets/test_videos/floral_breezee.mp4"
-    first_note_template_path = 'assets/first_note.png'
+    video_path = r"../assets/test_videos/floral_breezee.mp4"
+    first_note_template_path = '../assets/first_note.png'
     threshold = 0.9
     scales = np.linspace(0.8, 1.2, num=5)
     target_pixel = (22, 50)  # displacement from the top-left corner of the bounding box

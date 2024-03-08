@@ -65,8 +65,8 @@ def compare_videos(video1_path, video2_path):
 
 
 def main():
-    video2_path = r"../srcs/assets/test_videos/masks/yoimiya story quest mask.mp4"
-    video1_path = r"../srcs/assets/test_videos/yoimiya story quest.mp4"
+    video2_path = r"../assets/test_videos/masks/yoimiya story quest mask.mp4"
+    video1_path = r"../assets/test_videos/yoimiya story quest.mp4"
 
     compare_videos(video1_path, video2_path)
 

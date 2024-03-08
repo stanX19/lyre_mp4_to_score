@@ -1,10 +1,12 @@
+import os.path
 import cv2
 import numpy as np
-from deduce_key_pos import deduce_all_key_pos
-import utils
+from srcs.deduce_key_pos import deduce_all_key_pos
+from srcs import utils
+from srcs import Path
 
 
-def remove_dupes(positions):
+def remove_dupes(positions: list[tuple[int, int, int, int]]) -> list[tuple[int, int, int, int]]:
     key_positions = []
 
     for pt in positions:
@@ -28,7 +30,8 @@ def remove_dupes(positions):
     return key_positions
 
 
-def cv2_match_key(frame_gray, template_gray, threshold, scales) -> list[list[int]]:
+def cv2_match_key(frame_gray: np.ndarray, template_gray: np.ndarray,
+                  threshold: float, scales: list[float]) -> list[list[int]]:
     key_positions = []
 
     for scale in scales:
@@ -62,7 +65,8 @@ def cv2_match_key(frame_gray, template_gray, threshold, scales) -> list[list[int
     return key_positions
 
 
-def cv2_loop_through(video_path, note_template_path, threshold, scales, start_form=1):
+def cv2_loop_through(video_path: str, note_template_path: str, threshold: float,
+                     scales: list[float], start_form=1) -> list[tuple[int, int, int, int]]:
     cap = cv2.VideoCapture(video_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
@@ -129,7 +133,7 @@ def cv2_loop_through(video_path, note_template_path, threshold, scales, start_fo
         # Reduce the gap for the next iteration
         start_gap //= 2
 
-    raise RuntimeError("Failed to locate keys")
+    raise RuntimeError("mp4 to lyre: Failed to locate keys")
 
 
 # def cv2_loop_through0(video_path, note_template_path, threshold, scales, start_form=1):
@@ -188,9 +192,8 @@ def cv2_loop_through(video_path, note_template_path, threshold, scales, start_fo
 
 
 def main():
-    # video_path = r"assets/test_videos/cage.mp4"
     video_path = r"D:\Downloads\flower dance.mp4"
-    note_template_path = 'assets/templates/first_note.png'
+    note_template_path = os.path.join(Path.assets, 'templates/first_note.png')
     threshold = 0.955
     scales = np.linspace(0.5, 1.2, num=8)
     result = cv2_loop_through(video_path, note_template_path, threshold, scales, 1)

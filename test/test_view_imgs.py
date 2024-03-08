@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load the image
-image = cv2.imread('../srcs/assets/templates/first_note.png', cv2.IMREAD_UNCHANGED)
+image = cv2.imread('../assets/templates/first_note.png', cv2.IMREAD_UNCHANGED)
 
 # Create a copy of the image for visualization
 image_with_displacement = image.copy()

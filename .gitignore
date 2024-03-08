@@ -1,0 +1,9 @@
+__pycache__
+srcs/data/*
+srcs/assets/test_videos/*
+Scripts
+share
+pyvenv.cfg
+experiment
+.idea
+Lib/

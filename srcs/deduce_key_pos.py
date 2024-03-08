@@ -1,7 +1,7 @@
 import statistics
+from srcs.mp4_to_lyre_types import *
 
-
-def sorted_positions(positions: list[list[int]]) -> list[list[int]]:
+def sorted_positions(positions: list[LocType]) -> list[LocType]:
     if not positions:
         return positions
 
@@ -25,7 +25,7 @@ def sorted_positions(positions: list[list[int]]) -> list[list[int]]:
     return sorted_by_row_and_col
 
 
-def group_values(values, uncertainty) -> dict:
+def group_values(values: float, uncertainty: float) -> dict:
     grouped_values = {}
     for value in values:
         for group_key in grouped_values.keys():
@@ -53,8 +53,8 @@ def sets_of_data_with_difference(sorted_data: list, difference: int, pixel_uncer
     return list(grouped_values.values())
 
 
-def deduce_all_key_pos(key_positions: list[list[int]],
-                       screen_width, screen_height, pixel_uncertainty=10) -> list[list[int]]:
+def deduce_all_key_pos(key_positions: list[LocType],
+                       screen_width, screen_height, pixel_uncertainty=10) -> list[LocType]:
     if not key_positions:
         return []
 
@@ -105,8 +105,8 @@ def deduce_all_key_pos(key_positions: list[list[int]],
 
     elif len(filtered_sets_of_x) == 1 and len(possible_sets_of_y) == 1 and len(possible_sets_of_y[0]) > 1:
         set_of_y = possible_sets_of_y[0]
-        print(set_of_y)
-        print(filtered_sets_of_y)
+        # print(set_of_y)
+        # print(filtered_sets_of_y)
         y_diff = set_of_y[-1] - set_of_y[-2]
         for n in range(1, 10):
             if abs(y_diff / n - desired_y_diff) < y_uncertainty:

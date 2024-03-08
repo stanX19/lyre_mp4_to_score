@@ -2,12 +2,19 @@ import subprocess
 
 
 def format_file(path):
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         txt = f.read()
 
-    to_remove = ["\n", "\\", "/", "(", ")"]
-    for s in to_remove:
-         txt = txt.replace(s, " ")
+    to_space = ["\n", "\t", "\r", "\v", "\f", "\\", "/", "(", ")"]
+
+    txt = txt.upper()
+    new_text = ""
+    for c in txt:
+        if c in to_space:
+            new_text += " "
+        elif c in "ZXCVBNMASDFGHJQWERTYU":
+            new_text += c
+    txt = new_text
     while "  " in txt:
         txt = txt.replace("  ", " ")
     txt = txt.strip().split(" ")

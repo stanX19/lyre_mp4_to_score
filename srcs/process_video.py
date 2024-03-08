@@ -1,26 +1,42 @@
+import os.path
 import cv2
 import numpy as np
 import json
-import find_key_position
-import utils
+import time
+from srcs import find_key_position
+from srcs import utils
+from srcs import Path
+from srcs.mp4_to_lyre_types import *
 
 
-def process_video(video_path, note_template_path, threshold, scales, target_pixel, start_form=1):
+def process_video(video_path: str, note_template_path: str, threshold: float, scales: list[float],
+                  target_pixel_displacement: tuple[int, int], start_form_frame=1
+                  ) -> tuple[float, DpfType]:
+    """
+    Converts lyre video into dpf data
+    :param video_path: path of lyre video
+    :param note_template_path: path to png file
+    :param threshold: min threshold for note_template matching
+    :param scales: scales for template size to be resized
+    :param target_pixel_displacement: from top left corner
+    :param start_form_frame:
+    :return: fps and diff_per_frame
+    """
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
-    spf = 1 / fps
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     note_brightness_history = []  # Track the history of detected note positions
     diff_per_frame = []
 
-    if start_form >= int(cap.get(cv2.CAP_PROP_FRAME_COUNT)):
-        return []
+    if start_form_frame >= int(cap.get(cv2.CAP_PROP_FRAME_COUNT)):
+        raise ValueError("process video: Start frame > total frame in video")
     note_positions = find_key_position.cv2_loop_through(video_path, note_template_path, threshold,
-                                                        scales, start_form)
-    cap.set(cv2.CAP_PROP_POS_FRAMES, start_form)
-    f_count = start_form
+                                                        scales, start_form_frame)
+    cap.set(cv2.CAP_PROP_POS_FRAMES, start_form_frame)
+    f_count = start_form_frame
 
+    start_time = time.time()
     while cap.isOpened():
         f_count += 1
         ret, frame = cap.read()
@@ -37,8 +53,8 @@ def process_video(video_path, note_template_path, threshold, scales, target_pixe
             pt1 = (position[0], position[1])
 
             # Calculate the displacement from the top-left corner of the bounding box
-            x_dis = target_pixel[0]
-            y_dis = target_pixel[1]
+            x_dis = target_pixel_displacement[0]
+            y_dis = target_pixel_displacement[1]
             displacement_point = (pt1[0] + int(x_dis * position[4]), pt1[1] + int(y_dis * position[4]))
 
             # Record the brightness at the displacement point
@@ -51,26 +67,25 @@ def process_video(video_path, note_template_path, threshold, scales, target_pixe
             # Draw a small circle at the displacement point (for visualization)
             cv2.circle(frame, displacement_point, 2, (0, 0, 255), -1)
 
-        current_diff_per_frame = []
+        current_diff_per_frame = [0] * 21
 
         # note press == decrease in brightness
         current_note_brightness = [max(current_note_brightness) - i for i in current_note_brightness]
 
         # Draw bounding boxes around the detected keys (for visualization)
         for idx, position in enumerate(note_positions):
+            box_color = (0, 255, 0)
             pt1 = (position[0], position[1])
             pt2 = (position[0] + position[2], position[1] + position[3])
-            if note_brightness_history and idx < len(note_brightness_history):
+            if note_brightness_history:
                 diff = current_note_brightness[idx] - note_brightness_history[-1][idx]
-                current_diff_per_frame.append(diff)
+                current_diff_per_frame[idx] = diff
+
                 if note_brightness_history and diff > 15:
-                    cv2.rectangle(frame, pt1, pt2, (255, 255, 0), 2)
+                    box_color = (255, 255, 0)
                 elif note_brightness_history and diff < 0:
-                    cv2.rectangle(frame, pt1, pt2, (0, 0, 255), 2)
-                else:
-                    cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2)
-            else:
-                cv2.rectangle(frame, pt1, pt2, (0, 255, 0), 2)
+                    box_color = (0, 0, 255)
+            cv2.rectangle(frame, pt1, pt2, box_color, 2)
 
         note_brightness_history.append(current_note_brightness)
         diff_per_frame.append(current_diff_per_frame)
@@ -80,10 +95,27 @@ def process_video(video_path, note_template_path, threshold, scales, target_pixe
 
         # fancy stats
         top_left = (200, 200)  # (note_positions[14][0], max(0, note_positions[14][1] - 100))
-        message = "Frame:{:>7}/{}\nProgress:{:>7.2f}%\nTime passed:{:>7.2f}s".format(
+
+        current_time = time.time()
+        time_elapsed = current_time - start_time
+
+        average_time_per_frame = time_elapsed / f_count
+
+        # Calculate the estimated time remaining
+        frames_remaining = total_frames - f_count
+        estimated_time_remaining = frames_remaining * average_time_per_frame
+
+        if estimated_time_remaining >= 60:
+            minutes_remaining = int(estimated_time_remaining // 60)
+            seconds_remaining = int(estimated_time_remaining % 60)
+            time_remaining_str = "{:02d}:{:02d}".format(minutes_remaining, seconds_remaining)
+        else:
+            time_remaining_str = "{:.2f}s".format(estimated_time_remaining)
+
+        message = "Frame:{:>7}/{}\nProgress:{:>7.2f}%\nEstimated Time Remaining: {}".format(
             f_count, total_frames,
             round(f_count / total_frames * 100, 2),
-            round(f_count * spf, 2),
+            time_remaining_str
         )
         utils.cv2_print_texts(resized_frame, message, top_left,
                               cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), (200, 200, 200), 1)
@@ -94,33 +126,33 @@ def process_video(video_path, note_template_path, threshold, scales, target_pixe
     cap.release()
     cv2.destroyAllWindows()
 
-    return diff_per_frame
+    return fps, diff_per_frame
 
 
 def default_configs():
-    note_template_path = 'assets/templates/first_note.png'
+    note_template_path = Path.first_note
     threshold = 0.96
     scales = np.linspace(0.5, 1.2, num=8)
-    target_pixel = (23, 55)  # displacement from the top-left corner of the bounding box
+    target_pixel_displacement = (23, 55)  # displacement from the top-left corner of the bounding box
 
     return locals()
 
 
 def backup_configs():
-    note_template_path = 'assets/templates/first_note.png'
+    note_template_path = Path.first_note
     threshold = 0.92
     scales = np.linspace(0.7, 1.2, num=6)
-    target_pixel = (23, 53)  # displacement from the top-left corner of the bounding box
+    target_pixel_displacement = (23, 53)  # displacement from the top-left corner of the bounding box
 
     return locals()
 
 
 def main():
-    video_path = r"D:\Downloads\flower dance.mp4"  # 'assets/test_videos/cage.mp4'
+    video_path = os.path.join(Path.assets, "test_videos/floral_breeze.mp4")  # 'assets/test_videos/cage.mp4'
 
-    diff_per_frame = process_video(video_path, **default_configs(), start_form=1)
+    diff_per_frame_data = process_video(video_path, **default_configs(), start_form_frame=1)
     with open('data\\diff_per_frame.json', 'w+') as json_file:
-        json.dump(diff_per_frame, json_file)
+        json.dump(diff_per_frame_data, json_file)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
-import cv2
 import json
-from utils import score_list_to_nightly, score_list_to_recorded_nightly, score_list_to_score
+import cv2
+from srcs.utils import score_list_to_composed_nightly, score_list_to_recorded_nightly, score_list_to_score
 
 
 def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshold=10, decrease_needed=0):
@@ -23,7 +23,7 @@ def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshol
 
         for idx, diff in enumerate(all_diff):
             if diff > difference_threshold:
-                print(diff)
+                # print(diff)
                 if changes_status[idx] == 0:  # None
                     changes_status[idx] = 1
                 elif changes_status[idx] > 1:  # Consecutive note press detected
@@ -49,15 +49,14 @@ def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshol
     return keys_per_frame
 
 
-def get_video_fps(video_path):
+def get_video_fps(video_path: str):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
     cap.release()
     return fps
 
 
-def keys_to_score_list(keys_per_frame, video_path):
-    fps = get_video_fps(video_path)
+def kpf_to_score_list(keys_per_frame: list[str], fps: float):
     spf = 1 / fps
     score_list = [0.0]
 
@@ -75,7 +74,7 @@ def keys_to_score_list(keys_per_frame, video_path):
     return score_list
 
 
-def save_as_txt_score(score_list, path):
+def save_as_txt_score(score_list: list, path: str):
     score = score_list_to_score(score_list)
 
     score = score.split("\n", 1)[1]
@@ -87,24 +86,27 @@ def save_as_txt_score(score_list, path):
         f.write(score)
 
 
-def save_as_recorded_nightly(score_list, name):
-    export_path = f'data\\{name}.genshinsheet.json'
-    nightly = score_list_to_recorded_nightly(score_list, name)
+def save_as_nightly(nightly: str, name: str, directory: str) -> str:
+    export_path = f'{directory}\\{name}.json'
 
     with open(export_path, 'w+') as f:
         f.write(nightly)
 
-def save_as_composed_nightly(score_list, name):
-    export_path = f'data\\{name}.genshinsheet.json'
-    nightly = score_list_to_nightly(score_list, name)
-
-    with open(export_path, 'w+') as f:
-        f.write(nightly)
+    return export_path
 
 
-def brightness_diff_to_score_list(video_path, diff_per_frame, difference_threshold=10, decrease_needed=0):
+def save_as_recorded_nightly(score_list: list, name: str, directory: str) -> str:
+    return save_as_nightly(score_list_to_recorded_nightly(score_list), name, directory)
+
+
+def save_as_composed_nightly(score_list: list, name: str, directory: str) -> str:
+    return save_as_nightly(score_list_to_recorded_nightly(score_list), name, directory)
+
+
+def brightness_diff_to_score_list(fps: float, diff_per_frame: list[list[int]],
+                                  difference_threshold=10, decrease_needed=0) -> list:
     keys = brightness_diff_to_keys(diff_per_frame, difference_threshold, decrease_needed)
-    score_list = keys_to_score_list(keys, video_path)
+    score_list = kpf_to_score_list(keys, fps)
     return score_list
 
 
@@ -116,11 +118,14 @@ def main():
     decrease_needed = 0
 
     with open(diff_data_path, 'r') as json_file:
-        diff_per_frame = json.load(json_file)
+        diff_per_frame_data = json.load(json_file)
 
-    score_list = brightness_diff_to_score_list(video_path, diff_per_frame, difference_threshold, decrease_needed)
+    fps = diff_per_frame_data["fps"]
+    dpf = diff_per_frame_data["dpf"]
+    score_list = brightness_diff_to_score_list(fps, dpf, difference_threshold, decrease_needed)
     save_as_txt_score(score_list, "data\\output_score.txt")
-    save_as_nightly(score_list, name)
+    nightly = score_list_to_composed_nightly(score_list, name)
+    save_as_nightly(nightly, name)
 
 
 if __name__ == '__main__':
