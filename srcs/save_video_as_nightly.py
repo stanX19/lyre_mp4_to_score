@@ -1,6 +1,6 @@
 import os.path
 import easygui
-from srcs import format_input
+from . import format_input
 from . import process_video as pv
 from .mp4_to_lyre_types import *
 from .delay_frame_interpreter import *
