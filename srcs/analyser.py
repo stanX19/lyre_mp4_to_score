@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 from collections import Counter
 import json
-from srcs import Path
+from . import Path
 
 class DataPlotter:
     def __init__(self, directory_path):
