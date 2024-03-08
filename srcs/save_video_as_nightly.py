@@ -1,10 +1,10 @@
 import os.path
 import easygui
 from srcs import format_input
-from srcs import process_video as pv
-from srcs.mp4_to_lyre_types import *
-from srcs.delay_frame_interpreter import *
-from srcs import Path
+from . import process_video as pv
+from .mp4_to_lyre_types import *
+from .delay_frame_interpreter import *
+from . import Path
 
 
 def input_with_default(prompt, default):
@@ -82,9 +82,10 @@ def prompt_for_details(path: str) -> list[str, str, SavingFuncType, bool]:
     return [path, name, saving_func, use_history]
 
 
-def save_video_as_nightly(dst_path: str):
-    video_path = easygui.fileopenbox("select designated 720p mp4 file", "Select Video",
-                                     "D:\\Downloads\\", filetypes=["*.mp4"], multiple=True)
+def save_video_as_nightly(dst_path: str, video_path=None):
+    if video_path is None:
+        video_path = easygui.fileopenbox("select designated 720p mp4 file", "Select Video",
+                                         "D:\\Downloads\\", filetypes=["*.mp4"], multiple=True)
     queue: list[list[str, str, SavingFuncType, bool]] = []
 
     if video_path is None:
@@ -101,22 +102,3 @@ def save_video_as_nightly(dst_path: str):
 
     if not queue:
         print("???")
-
-    input("press enter to exit")
-
-
-def main():
-    save_video_as_nightly(Path.data)
-
-
-if __name__ == '__main__':
-    main()
-
-r"""
-import os
-import sys
-sys.path.append(r"C:\Users\DELL\PycharmProjects\pythonProject")
-import mp4_to_lyre
-mp4_to_lyre.main.save_video_as_nightly("Desktop")
-"""
-

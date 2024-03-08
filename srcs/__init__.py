@@ -8,4 +8,4 @@ from . import find_key_position
 from . import format_input
 from . import mp4_to_lyre_types
 from . import Path
-from . import main
+from .save_video_as_nightly import *

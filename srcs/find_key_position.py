@@ -1,9 +1,9 @@
 import os.path
 import cv2
 import numpy as np
-from srcs.deduce_key_pos import deduce_all_key_pos
-from srcs import utils
-from srcs import Path
+from .deduce_key_pos import deduce_all_key_pos
+from . import utils
+from . import Path
 
 
 def remove_dupes(positions: list[tuple[int, int, int, int]]) -> list[tuple[int, int, int, int]]:

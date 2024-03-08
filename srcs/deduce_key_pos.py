@@ -1,5 +1,5 @@
 import statistics
-from srcs.mp4_to_lyre_types import *
+from .mp4_to_lyre_types import *
 
 def sorted_positions(positions: list[LocType]) -> list[LocType]:
     if not positions:

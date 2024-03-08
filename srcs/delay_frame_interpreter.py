@@ -1,6 +1,6 @@
 import json
 import cv2
-from srcs.utils import score_list_to_composed_nightly, score_list_to_recorded_nightly, score_list_to_score
+from .utils import score_list_to_composed_nightly, score_list_to_recorded_nightly, score_list_to_score
 
 
 def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshold=10, decrease_needed=0):

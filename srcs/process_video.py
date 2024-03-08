@@ -3,10 +3,10 @@ import cv2
 import numpy as np
 import json
 import time
-from srcs import find_key_position
-from srcs import utils
-from srcs import Path
-from srcs.mp4_to_lyre_types import *
+from . import find_key_position
+from . import utils
+from . import Path
+from .mp4_to_lyre_types import *
 
 
 def process_video(video_path: str, note_template_path: str, threshold: float, scales: list[float],
