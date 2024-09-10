@@ -59,7 +59,7 @@ def cv2_match_key(frame_gray: np.ndarray, template_gray: np.ndarray,
                         abs(key_y - existing_position[1]) <= cell_height):
                     break
             else:  # if not is_duplicate:
-                print(f"Matched ({key_x}, {key_y}) with threshold: {matched_threshold:.3f}  |  scale={scale}")
+                # print(f"Matched ({key_x}, {key_y}) with threshold: {matched_threshold:.3f}  |  scale={scale}")
                 key_positions.append([key_x, key_y, cell_width, cell_height, scale])
 
         if len(key_positions) >= 21:
