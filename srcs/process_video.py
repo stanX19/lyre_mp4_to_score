@@ -44,6 +44,7 @@ def process_video(video_path: str, note_template_path: str, threshold: float, sc
             break
 
         # Convert the frame to grayscale
+        frame = cv2.resize(frame, (1920, 1080))
         frame_scaled = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # collect brightness
@@ -131,8 +132,9 @@ def process_video(video_path: str, note_template_path: str, threshold: float, sc
 
 def default_configs():
     note_template_path = Path.first_note
-    threshold = 0.96
-    scales = np.linspace(0.5, 1.2, num=8)
+    threshold = 0.8
+    scales = [1.0, 1.2, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5]
+    print(scales)
     target_pixel_displacement = (23, 55)  # displacement from the top-left corner of the bounding box
 
     return locals()

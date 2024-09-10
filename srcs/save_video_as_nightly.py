@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os.path
 import easygui
 from . import format_input
@@ -62,7 +63,7 @@ def _convert_one(video_path: str, name: str, saving_func: SavingFuncType, use_hi
     print(f"Completed; Saved as {save_path}")
 
 
-def prompt_for_details(path: str) -> list[str, str, SavingFuncType, bool]:
+def prompt_for_details(path: str) -> tuple[str, str, SavingFuncType, bool]:
     if os.path.exists(generate_dpf_filepath(path)):
         enter = ""
         while enter not in ["y", "yes", "n", "no"]:
@@ -79,14 +80,14 @@ def prompt_for_details(path: str) -> list[str, str, SavingFuncType, bool]:
     else:
         saving_func = save_as_recorded_nightly
         print(f"    [NAME: {name} | FORMAT: Recorded]")
-    return [path, name, saving_func, use_history]
+    return path, name, saving_func, use_history
 
 
-def save_video_as_nightly(dst_path: str, video_path=Union[list, None]):
+def save_video_as_nightly(dst_path: str, video_path: Union[list, None] = None):
     if video_path is None:
-        video_path = easygui.fileopenbox("select designated 720p mp4 file", "Select Video",
+        video_path: list[str] = easygui.fileopenbox("select designated 720p mp4 file", "Select Video",
                                          "D:\\Downloads\\", filetypes=["*.mp4"], multiple=True)
-    queue: list[list[str, str, SavingFuncType, bool]] = []
+    queue: list[tuple[str, str, SavingFuncType, bool]] = []
 
     if video_path is None:
         return
