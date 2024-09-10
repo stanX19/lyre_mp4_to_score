@@ -85,7 +85,7 @@ def cv2_loop_through(video_path: str, note_template_path: str, threshold: float,
     first_note_template = cv2.imread(note_template_path)  # , cv2.IMREAD_GRAYSCALE)
     # template_scaled = cv2.cvtColor(first_note_template, cv2.COLOR_BGR2GRAY)
     template_scaled = match_preprocess(first_note_template)
-    cv2.imshow("template", template_scaled)
+    # cv2.imshow("template", template_scaled)
     note_positions = []
 
     # Binary search pattern

@@ -134,7 +134,6 @@ def default_configs():
     note_template_path = Path.first_note
     threshold = 0.8
     scales = [1.0, 1.2, 1.1, 0.9, 0.8, 0.7, 0.6, 0.5]
-    print(scales)
     target_pixel_displacement = (23, 55)  # displacement from the top-left corner of the bounding box
 
     return locals()
