@@ -3,7 +3,7 @@ import cv2
 from .utils import score_list_to_composed_nightly, score_list_to_recorded_nightly, score_list_to_score
 
 
-def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshold=10, decrease_needed=0):
+def brightness_diff_to_keys(diff_per_frame: list[list[int]], difference_threshold:float, decrease_needed=0):
     keys = "ZXCVBNMASDFGHJQWERTYU"
     keys_per_frame = []
 
@@ -104,7 +104,7 @@ def save_as_composed_nightly(score_list: list, name: str, directory: str) -> str
 
 
 def brightness_diff_to_score_list(fps: float, diff_per_frame: list[list[int]],
-                                  difference_threshold=10, decrease_needed=0) -> list:
+                                  difference_threshold: float, decrease_needed=0) -> list:
     keys = brightness_diff_to_keys(diff_per_frame, difference_threshold, decrease_needed)
     score_list = kpf_to_score_list(keys, fps)
     return score_list
@@ -114,7 +114,7 @@ def main():
     name = "Kataomoi - Aimer"
     diff_data_path = 'data\\diff_per_frame.json'
     video_path = f'assets\\test_videos\\{name}.mp4'
-    difference_threshold = 5
+    difference_threshold = 13
     decrease_needed = 0
 
     with open(diff_data_path, 'r') as json_file:
@@ -125,7 +125,7 @@ def main():
     score_list = brightness_diff_to_score_list(fps, dpf, difference_threshold, decrease_needed)
     save_as_txt_score(score_list, "data\\output_score.txt")
     nightly = score_list_to_composed_nightly(score_list, name)
-    save_as_nightly(nightly, name)
+    save_as_nightly(nightly, name, "data")
 
 
 if __name__ == '__main__':

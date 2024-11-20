@@ -6,6 +6,7 @@ from . import process_video as pv
 from .mp4_to_lyre_types import *
 from .delay_frame_interpreter import *
 from . import Path
+from .analyser import Analyser
 
 
 def input_with_default(prompt, default):
@@ -43,7 +44,8 @@ def video_to_dpf_data(video_path: str, start=1) -> tuple[float, DpfType]:
 
 def save_dpf_data_as_nightly_score(name: str, saving_func: SavingFuncType,
                                    diff_per_frame_data: tuple[float, DpfType], directory: str) -> str:
-    difference_threshold = 10
+    analyser = Analyser(diff_per_frame_data[1])
+    difference_threshold = analyser.find_note_on_threshold(True)
     decrease_needed = 0
 
     fps, dpf = diff_per_frame_data
